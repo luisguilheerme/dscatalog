@@ -31,6 +31,11 @@ public class Category {
 		this.name = name;
 	}
 
+	public Category(Category entity) {
+		id = entity.getId();
+		name = entity.getName();
+	}
+	
 	public Long getId() {
 		return id;
 	}
