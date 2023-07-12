@@ -4,13 +4,14 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-
 import com.luisguilherme.dscatalog.entities.Category;
 import com.luisguilherme.dscatalog.entities.Product;
-
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.Size;
 
 
 public class ProductDTO {
@@ -18,8 +19,14 @@ public class ProductDTO {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
+	@Size(min = 5, max = 60, message = "Deve ter entre 5 e 60 caracteres")
+	@NotBlank(message = "Campo obrigatório")
 	private String name;
+	
+	@NotBlank(message = "Campo obrigatório")
 	private String description;
+	
+	@Positive(message = "Preço deve ser positivo")
 	private Double price;
 	private String imgUrl;
 	private Instant date;

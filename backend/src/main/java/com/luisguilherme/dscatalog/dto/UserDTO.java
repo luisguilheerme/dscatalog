@@ -4,10 +4,10 @@ import java.util.HashSet;
 import java.util.Set;
 
 import com.luisguilherme.dscatalog.entities.User;
-
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+
 
 public class UserDTO {
 

@@ -10,6 +10,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import com.luisguilherme.dscatalog.dto.RoleDTO;
 import com.luisguilherme.dscatalog.dto.UserDTO;
@@ -22,6 +24,7 @@ import com.luisguilherme.dscatalog.services.exceptions.DatabaseException;
 import com.luisguilherme.dscatalog.services.exceptions.ResourceNotFoundException;
 
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.validation.Valid;
 
 
 @Service
@@ -43,14 +46,14 @@ public class UserService {
 	}	
 	
 	@Transactional(readOnly = true)
-	public UserDTO findById(Long id) {		
+	public UserDTO findById(@PathVariable Long id) {		
 		Optional<User> obj = repository.findById(id);
 		User entity = obj.orElseThrow(() -> new ResourceNotFoundException("Resource not Found"));
 		return new UserDTO(entity);		
 	}	
 	
 	@Transactional
-	public UserDTO insert(UserInsertDTO dto) {	
+	public UserDTO insert(@Valid @RequestBody UserInsertDTO dto) {	
 		User entity = new User();	
 		copyDtoToEntity(dto, entity);	
 		entity.setPassword(passwordEncoder.encode(dto.getPassword()));
@@ -60,7 +63,7 @@ public class UserService {
 
 
 	@Transactional
-	public UserDTO update(Long id, UserDTO dto) {	
+	public UserDTO update(@Valid @PathVariable @RequestBody Long id, UserDTO dto) {	
 		try {
 			User entity = repository.getOne(id);		
 			copyDtoToEntity(dto, entity);

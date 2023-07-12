@@ -1,4 +1,4 @@
-package com.luisguilherme.dscatalog.dto;
+package com.luisguilherme.dscatalog.services.exceptions;
 
 import java.time.Instant;
 

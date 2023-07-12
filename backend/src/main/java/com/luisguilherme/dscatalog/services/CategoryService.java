@@ -9,6 +9,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import com.luisguilherme.dscatalog.dto.CategoryDTO;
 import com.luisguilherme.dscatalog.entities.Category;
@@ -17,6 +19,7 @@ import com.luisguilherme.dscatalog.services.exceptions.DatabaseException;
 import com.luisguilherme.dscatalog.services.exceptions.ResourceNotFoundException;
 
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.validation.Valid;
 
 
 @Service
@@ -33,14 +36,14 @@ public class CategoryService {
 	}	
 	
 	@Transactional(readOnly = true)
-	public CategoryDTO findById(Long id) {		
+	public CategoryDTO findById(@PathVariable Long id) {		
 		Optional<Category> obj = repository.findById(id);
 		Category entity = obj.orElseThrow(() -> new ResourceNotFoundException("Resource not Found"));
 		return new CategoryDTO(entity);		
 	}	
 	
 	@Transactional
-	public CategoryDTO insert(CategoryDTO dto) {	
+	public CategoryDTO insert(@Valid @RequestBody CategoryDTO dto) {	
 		Category entity = new Category();		
 		entity.setName(dto.getName());	
 		entity = repository.save(entity);		
@@ -48,7 +51,7 @@ public class CategoryService {
 	}
 	
 	@Transactional
-	public CategoryDTO update(Long id, CategoryDTO dto) {	
+	public CategoryDTO update(@Valid @PathVariable @RequestBody Long id, CategoryDTO dto) {	
 		try {
 			Category entity = repository.getReferenceById(id);		
 			entity.setName(dto.getName());	
