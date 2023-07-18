@@ -1,17 +1,20 @@
 package com.luisguilherme.dscatalog.services;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import com.luisguilherme.dscatalog.dto.RoleDTO;
 import com.luisguilherme.dscatalog.dto.UserDTO;
@@ -19,17 +22,17 @@ import com.luisguilherme.dscatalog.dto.UserInsertDTO;
 import com.luisguilherme.dscatalog.dto.UserUpdateDTO;
 import com.luisguilherme.dscatalog.entities.Role;
 import com.luisguilherme.dscatalog.entities.User;
+import com.luisguilherme.dscatalog.projections.UserDetailsProjection;
 import com.luisguilherme.dscatalog.repositories.RoleRepository;
 import com.luisguilherme.dscatalog.repositories.UserRepository;
 import com.luisguilherme.dscatalog.services.exceptions.DatabaseException;
 import com.luisguilherme.dscatalog.services.exceptions.ResourceNotFoundException;
 
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.validation.Valid;
 
 
 @Service
-public class UserService {
+public class UserService implements UserDetailsService {
 	
 	@Autowired
 	private BCryptPasswordEncoder passwordEncoder;
@@ -100,6 +103,25 @@ public class UserService {
 			entity.getRoles().add(role);
 		}
 		
+	}
+
+	@Override
+	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+		
+		List<UserDetailsProjection> result =repository.searchUserAndRolesByEmail(username);
+		if(result.size() == 0) {
+			throw new UsernameNotFoundException("Usuário não encontrado");
+		}
+		
+		User user = new User();
+		user.setEmail(username);
+		user.setPassword(result.get(0).getPassword());
+		
+		for(UserDetailsProjection projection : result) {
+			user.addRole(new Role(projection.getRoleId(), projection.getAuthority()));
+		}
+		
+		return user;
 	}
 
 	
