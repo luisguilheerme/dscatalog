@@ -18,7 +18,10 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.luisguilherme.dscatalog.dto.UserDTO;
 import com.luisguilherme.dscatalog.dto.UserInsertDTO;
+import com.luisguilherme.dscatalog.dto.UserUpdateDTO;
 import com.luisguilherme.dscatalog.services.UserService;
+
+import jakarta.validation.Valid;
 
 
 @RestController
@@ -39,19 +42,20 @@ public class UserController {
 		UserDTO dto = service.findById(id);
 		return ResponseEntity.ok(dto);
 	}
+	
 
 	@PostMapping
-	public ResponseEntity<UserDTO> insert(@RequestBody UserInsertDTO dto){		
+	public ResponseEntity<UserDTO> insert(@RequestBody @Valid UserInsertDTO dto){		
 		UserDTO newDto = service.insert(dto);
 		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(newDto.getId()).toUri();
 		return ResponseEntity.created(uri).body(newDto);
 			
 	}
 	
-	@PutMapping(value = "/{id}")	
-	public ResponseEntity<UserDTO> update(@PathVariable Long id, @RequestBody UserDTO dto){		
-		dto = service.update(id, dto);
-		return ResponseEntity.ok(dto);
+	@PutMapping(value = "/{id}")
+	public ResponseEntity<UserDTO> update(@PathVariable Long id, @RequestBody @Valid UserUpdateDTO dto) {
+		UserDTO newDto = service.update(id, dto);
+		return ResponseEntity.ok().body(newDto);
 	}
 	
 	@DeleteMapping(value = "/{id}")	

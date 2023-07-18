@@ -5,12 +5,16 @@ import com.luisguilherme.dscatalog.entities.Category;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 
 public class CategoryDTO {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
+	@Size(min = 5, max = 40, message = "Deve ter entre 5 e 40 caracteres")
+	@NotBlank(message = "Campo obrigatório")
 	private String name;
 	
 	public CategoryDTO() {

@@ -4,9 +4,13 @@ import java.util.HashSet;
 import java.util.Set;
 
 import com.luisguilherme.dscatalog.entities.User;
+
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 
 
 public class UserDTO {
@@ -14,8 +18,16 @@ public class UserDTO {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
+	
+	@Size(min = 2, max = 30, message = "Deve ter entre 2 e 30 caracteres")
+	@NotBlank(message = "Campo obrigatório")
 	private String firstName;
+	
+	@Size(min = 2, max = 30, message = "Deve ter entre 2 e 30 caracteres")
+	@NotBlank(message = "Campo obrigatório")
 	private String lastName;
+	@Email(message = "Email inválido")
+	@NotBlank(message = "Campo obrigatório")
 	private String email;
 	
 	Set<RoleDTO> roles = new HashSet();

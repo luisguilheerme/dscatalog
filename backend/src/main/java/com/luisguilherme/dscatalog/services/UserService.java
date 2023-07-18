@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import com.luisguilherme.dscatalog.dto.RoleDTO;
 import com.luisguilherme.dscatalog.dto.UserDTO;
 import com.luisguilherme.dscatalog.dto.UserInsertDTO;
+import com.luisguilherme.dscatalog.dto.UserUpdateDTO;
 import com.luisguilherme.dscatalog.entities.Role;
 import com.luisguilherme.dscatalog.entities.User;
 import com.luisguilherme.dscatalog.repositories.RoleRepository;
@@ -53,7 +54,7 @@ public class UserService {
 	}	
 	
 	@Transactional
-	public UserDTO insert(@Valid @RequestBody UserInsertDTO dto) {	
+	public UserDTO insert(UserInsertDTO dto) {	
 		User entity = new User();	
 		copyDtoToEntity(dto, entity);	
 		entity.setPassword(passwordEncoder.encode(dto.getPassword()));
@@ -61,11 +62,10 @@ public class UserService {
 		return new UserDTO(entity);
 	}	
 
-
 	@Transactional
-	public UserDTO update(@Valid @PathVariable @RequestBody Long id, UserDTO dto) {	
+	public UserDTO update(Long id, UserUpdateDTO dto) {	
 		try {
-			User entity = repository.getOne(id);		
+			User entity = repository.getReferenceById(id);		
 			copyDtoToEntity(dto, entity);
 			entity = repository.save(entity);		
 			return new UserDTO(entity);
@@ -89,6 +89,7 @@ public class UserService {
 		
 	}
 	
+	@SuppressWarnings("deprecation")
 	private void copyDtoToEntity(UserDTO dto, User entity) {
 		entity.setFirstName(dto.getFirstName());
 		entity.setLastName(dto.getLastName());
@@ -100,6 +101,7 @@ public class UserService {
 		}
 		
 	}
+
 	
 }
 
