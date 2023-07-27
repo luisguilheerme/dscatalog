@@ -46,7 +46,6 @@ public class UserController {
 		return ResponseEntity.ok(dto);
 	}
 	
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	@PostMapping
 	public ResponseEntity<UserDTO> insert(@RequestBody @Valid UserInsertDTO dto){		
 		UserDTO newDto = service.insert(dto);
@@ -55,7 +54,6 @@ public class UserController {
 			
 	}
 	
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	@PutMapping(value = "/{id}")
 	public ResponseEntity<UserDTO> update(@PathVariable Long id, @RequestBody @Valid UserUpdateDTO dto) {
 		UserDTO newDto = service.update(id, dto);
