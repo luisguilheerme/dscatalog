@@ -1,10 +1,13 @@
 package com.luisguilherme.dscatalog.services;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -14,6 +17,7 @@ import com.luisguilherme.dscatalog.dto.CategoryDTO;
 import com.luisguilherme.dscatalog.dto.ProductDTO;
 import com.luisguilherme.dscatalog.entities.Category;
 import com.luisguilherme.dscatalog.entities.Product;
+import com.luisguilherme.dscatalog.projections.ProductProjection;
 import com.luisguilherme.dscatalog.repositories.CategoryRepository;
 import com.luisguilherme.dscatalog.repositories.ProductRepository;
 import com.luisguilherme.dscatalog.services.exceptions.DatabaseException;
@@ -32,9 +36,21 @@ public class ProductService {
 	private CategoryRepository categoryRepository;
 	
 	@Transactional(readOnly = true)
-	public Page<ProductDTO> findAll(Pageable pageable) {		
-		Page<Product> result = repository.findAll(pageable);
-		return result.map(x -> new ProductDTO(x));
+	public Page<ProductDTO> findAll(String name, String categoryId, Pageable pageable) {		
+		
+		List<Long> categoryIds = Arrays.asList();
+		
+		if(!"0".equals(categoryId)) {
+			categoryIds = Arrays.asList(categoryId.split(",")).stream().map(Long::parseLong).toList();
+		}
+		
+		Page<ProductProjection> page = repository.searchProducts(categoryIds, name, pageable);
+		List<Long> productIds = page.map(x -> x.getId()).toList();
+		
+		List<Product> entities = repository.searchProductsWithCategories(productIds);
+		List<ProductDTO> dtos = entities.stream().map(p -> new ProductDTO(p, p.getCategories())).toList();
+		
+		return new PageImpl<>(dtos, page.getPageable(), page.getTotalElements());
 	}	
 	
 	@Transactional(readOnly = true)

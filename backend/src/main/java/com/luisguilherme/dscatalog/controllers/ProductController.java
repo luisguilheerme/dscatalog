@@ -1,7 +1,6 @@
 package com.luisguilherme.dscatalog.controllers;
 
 import java.net.URI;
-import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -15,6 +14,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -32,9 +32,12 @@ public class ProductController {
 	private ProductService service;
 	
 	@GetMapping
-	public ResponseEntity<Page<ProductDTO>> findAll(Pageable pageable){		
-		Page<ProductDTO> dto = service.findAll(pageable);
-		return ResponseEntity.ok(dto);
+	public ResponseEntity<Page<ProductDTO>> findAll(
+			@RequestParam(value = "name", defaultValue = "") String name,
+			@RequestParam(value = "categoryId", defaultValue = "0")String categoryId,			
+			Pageable pageable){		
+		Page<ProductDTO> list = service.findAll(name, categoryId, pageable);
+		return ResponseEntity.ok(list);
 	}
 	
 	@GetMapping(value="/{id}")
